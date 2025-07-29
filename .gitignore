@@ -1,0 +1,15 @@
+DatingApp.Api/bin/
+DatingApp.Api/obj/
+.vs/
+
+DatingApp.Application/bin/
+DatingApp.Application/obj/
+
+DatingApp.Data/bin/
+DatingApp.Data/obj/
+
+DatingApp.Domain/bin/
+DatingApp.Domain/obj/
+
+DatingApp.Ioc/bin/
+DatingApp.Ioc/obj/
