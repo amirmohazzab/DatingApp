@@ -1,5 +1,8 @@
-﻿using DatingApp.Application.Services.Implementations;
+﻿using AutoMapper;
+using DatingApp.Application.Services.Implementations;
 using DatingApp.Application.Services.Interfaces;
+using DatingApp.Data.Repositories;
+using DatingApp.Domain.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -16,11 +19,14 @@ namespace DatingApp.Ioc.Dependencies
             #region Services
 
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IPhotoService, PhotoService>();
 
             #endregion
 
             #region Repositories
 
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IAccountRepository, AccountRepository>();
 
             #endregion
         }

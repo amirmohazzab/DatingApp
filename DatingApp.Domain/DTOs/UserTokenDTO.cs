@@ -11,5 +11,7 @@ namespace DatingApp.Domain.DTOs
         public string userName { get; set; }
 
         public string token { get; set; }
+
+        public string photoUrl { get; set; }
     }
 }

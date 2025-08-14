@@ -1,4 +1,5 @@
-﻿using DatingApp.Domain.Entities.User;
+﻿using DatingApp.Domain.Entities.Photo;
+using DatingApp.Domain.Entities.User;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -13,5 +14,7 @@ namespace DatingApp.Data.Context
         public DatingAppDbContext(DbContextOptions<DatingAppDbContext> options) : base(options) { }
 
         public DbSet<User> Users { get; set; }
+
+        public DbSet<Photo> Photos { get; set; }
     }
 }

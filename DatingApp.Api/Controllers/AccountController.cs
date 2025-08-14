@@ -1,7 +1,12 @@
-﻿using DatingApp.Application.Services.Interfaces;
+﻿using AutoMapper;
+using Azure.Identity;
+using DatingApp.Api.Errors;
+using DatingApp.Application.Services.Interfaces;
 using DatingApp.Data.Context;
+using DatingApp.Data.Repositories;
 using DatingApp.Domain.DTOs;
 using DatingApp.Domain.Entities.User;
+using DatingApp.Domain.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,43 +15,47 @@ using System.Security.Cryptography;
 namespace DatingApp.Api.Controllers
 {
     public class AccountController 
-        (DatingAppDbContext dbContext,
-        ITokenService tokenService): BaseController
+        (ITokenService tokenService,
+        IUserRepository userRepository,
+        IAccountRepository accountRepository,
+        IMapper mapper): BaseController
     {
         [HttpPost("register")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<UserTokenDTO>> Register([FromBody] RegisterDTO model)
         {
-            if (await IsExistUserName(model.userName))
-                return BadRequest("User is deplicated");
+            if (await accountRepository.IsExistUserName(model.userName))
+                return BadRequest(new ApiResponse(400, model.userName + "User is duplicated"));
 
             using var hmac = new HMACSHA256();
+            var user = mapper.Map<User>(model);
+            user.PasswordSalt = hmac.Key;
+            user.PasswordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(model.password));
 
-            var user = new User()
+            await accountRepository.addUser(user);
+
+            if (await accountRepository.SaveChangesAsync())
             {
-                UserName = model.userName,
-                PasswordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(model.password)),
-                PasswordSalt = hmac.Key
-            };
-
-            await dbContext.Users.AddAsync(user);
-            await dbContext.SaveChangesAsync();
-
-            return new UserTokenDTO
-            {
-                userName = user.UserName,
-                token = tokenService.CreateToken(user)
-            };
+                return Ok(new UserTokenDTO
+                {
+                    userName = user.UserName,
+                    token = tokenService.CreateToken(user)
+                });
+            }
+            return BadRequest(new ApiResponse(400, "Save Data Error"));
         }
 
 
         [HttpPost("login")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<UserTokenDTO>> Login([FromBody] LoginDTO model)
         {
-           var user = await dbContext.Users
-                .SingleOrDefaultAsync(u => u.UserName.ToLower() == model.userName.ToLower());
+            var user = await accountRepository.GetUserByUserNameWithPhoto(model.userName);
 
             if (user == null)
-                return BadRequest("UserName not found");
+                return BadRequest(new ApiResponse(400, "UserName not found"));
 
             using var hmac = new HMACSHA256(user.PasswordSalt);
             var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(model.password));
@@ -54,19 +63,21 @@ namespace DatingApp.Api.Controllers
             for (int i = 0; i < computedHash.Length; i++)
             {
                 if (computedHash[i] != user.PasswordHash[i])
-                    return BadRequest("Password us wrong");
+                    return BadRequest(new ApiResponse(400, "Password us wrong"));
             }
 
-            return new UserTokenDTO
+            return Ok(new UserTokenDTO
             {
                 userName = user.UserName,
-                token = tokenService.CreateToken(user)
-            };
+                token = tokenService.CreateToken(user),
+                photoUrl = user?.Photos?.FirstOrDefault(u => u.IsMain)?.Url
+            });
         }
 
-        private async Task<bool> IsExistUserName(string userName)
+        [HttpGet("IsExistUserName/{userName}")]
+        public async Task<ActionResult<bool>> IsExistUserName(string userName)
         {
-            return await dbContext.Users.AnyAsync(u => u.UserName.ToLower() == userName.ToLower());
+            return await accountRepository.IsExistUserName(userName);
         }
     }
 }

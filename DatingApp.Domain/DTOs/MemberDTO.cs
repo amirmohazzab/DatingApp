@@ -1,25 +1,19 @@
-﻿using System;
+﻿using DatingApp.Domain.Entities.Photo;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DatingApp.Domain.Entities.User
+namespace DatingApp.Domain.DTOs
 {
-    public class User
+    public class MemberDTO
     {
-        [Key]
         public int UserId { get; set; }
 
         public int? Gender { get; set; }
 
         public string UserName { get; set; }
-
-        public byte[] PasswordHash { get; set; }
-
-        public byte[] PasswordSalt { get; set; }
 
         public string? Email { get; set; }
 
@@ -41,7 +35,8 @@ namespace DatingApp.Domain.Entities.User
 
         public string? Country { get; set; }
 
-        [InverseProperty("User")]
-        public ICollection<Photo.Photo>? Photos { get; set; }
+        public string? PhotoUrl { get; set; }
+
+        public ICollection<PhotoDTO>? Photos { get; set; }
     }
 }
