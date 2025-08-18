@@ -22,9 +22,36 @@ namespace DatingApp.Data.Repositories
             return await dbContext.Users.ToListAsync();
         }
 
-        public async Task<IEnumerable<MemberDTO>> GetAllUsersMemberDTO()
+        public async Task<PagedList<MemberDTO>> GetAllUsersMemberDTO(UserParams userParams)
         {
-            return await dbContext.Users.ProjectTo<MemberDTO>(mapper.ConfigurationProvider).ToListAsync();
+            var query = dbContext.Users.AsNoTracking();
+            //query = query.Where(u => u.UserName != userParams.currentUserName);
+            query = query.Where(u => u.Gender == userParams.Gender);
+            query = query.Where(u => u.Age > userParams.MinAge && u.Age < userParams.MaxAge);
+
+            if (userParams.TypeSort == TypeSort.desc)
+            {
+                query = userParams.OrderBy switch
+                {
+                    OrderByEnum.lastActive => query.OrderByDescending(u => u.LastActive),
+                    OrderByEnum.created => query.OrderByDescending(u => u.Created),
+                    OrderByEnum.age => query.OrderByDescending(u => u.Age),
+                    _ => query.OrderByDescending(u => u.LastActive),
+                };
+            }
+            else
+            {
+                query = userParams.OrderBy switch
+                {
+                    OrderByEnum.lastActive => query.OrderBy(u => u.LastActive),
+                    OrderByEnum.created => query.OrderBy(u => u.Created),
+                    OrderByEnum.age => query.OrderBy(u => u.Age),
+                    _ => query.OrderBy(u => u.LastActive),
+                };
+            }
+            var result = query.ProjectTo<MemberDTO>(mapper.ConfigurationProvider);
+            var items = await PagedList<MemberDTO>.CreateAsync(result, userParams.PageNumber, userParams.PageSize);
+            return items;
         }
 
         public async Task<MemberDTO> GetMemberDTOById(int userId)

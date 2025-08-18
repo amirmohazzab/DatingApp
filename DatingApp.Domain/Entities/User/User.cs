@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DatingApp.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -13,7 +14,7 @@ namespace DatingApp.Domain.Entities.User
         [Key]
         public int UserId { get; set; }
 
-        public int? Gender { get; set; }
+        public GenderEnum Gender { get; set; }
 
         public string UserName { get; set; }
 

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DatingApp.Api.Errors;
 using DatingApp.Application.Extensions;
+using DatingApp.Application.Helper;
 using DatingApp.Application.Services.Interfaces;
 using DatingApp.Data.Context;
 using DatingApp.Domain.DTOs;
@@ -15,16 +16,20 @@ using System.Security.Claims;
 
 namespace DatingApp.Api.Controllers
 {
-    [Authorize]
+    
+    [ServiceFilter(typeof(LogUserActivity))]
     public class UsersController(
         IUserRepository userRepository,
         IMapper mapper,
         IPhotoService photoService) : BaseController
     {
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<MemberDTO>>> GetUsers()
+        [HttpGet("GetAllUsers")]
+        public async Task<ActionResult<PagedList<MemberDTO>>> GetUsers([FromQuery] UserParams userParams)
         {
-            return Ok(await userRepository.GetAllUsersMemberDTO());
+            //userParams.currentUserName = HttpContext.User.GetUserName();
+            var users = await userRepository.GetAllUsersMemberDTO(userParams);
+
+            return Ok(users);
         }
 
         [HttpGet("getUserById/{userId:int}")]

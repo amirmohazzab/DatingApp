@@ -2,6 +2,7 @@ using DatingApp.Api.Errors;
 using DatingApp.Api.Extensions;
 using DatingApp.Api.Helper;
 using DatingApp.Api.Middlewares;
+using DatingApp.Application.Helper;
 using DatingApp.Data.Context;
 using DatingApp.Data.SeedData;
 using DatingApp.Domain.Entities.User;
@@ -26,6 +27,8 @@ builder.Services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
 
 builder.Services.AddApplicationService(builder.Configuration);
 
+builder.Services.AddScoped<LogUserActivity>();
+
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
 
 #endregion
@@ -33,12 +36,6 @@ builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection(
 #region Cors
 
 builder.Services.AddCors();
-
-#endregion
-
-#region
-
-builder.Services.AddIdentityService(builder.Configuration);
 
 #endregion
 
@@ -57,6 +54,12 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
             return new BadRequestObjectResult(errorResponse);
         }
 );
+
+#endregion
+
+#region Identity
+
+builder.Services.AddIdentityService(builder.Configuration);
 
 #endregion
 

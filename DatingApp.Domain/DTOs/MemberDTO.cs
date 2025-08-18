@@ -1,4 +1,5 @@
 ﻿using DatingApp.Domain.Entities.Photo;
+using DatingApp.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace DatingApp.Domain.DTOs
     {
         public int UserId { get; set; }
 
-        public int? Gender { get; set; }
+        public GenderEnum Gender { get; set; }
 
         public string UserName { get; set; }
 

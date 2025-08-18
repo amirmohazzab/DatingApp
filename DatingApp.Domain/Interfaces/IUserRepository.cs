@@ -12,7 +12,7 @@ namespace DatingApp.Domain.Interfaces
     {
         Task<IEnumerable<User>> GetAllUsers();
 
-        Task<IEnumerable<MemberDTO>> GetAllUsersMemberDTO();
+        Task<PagedList<MemberDTO>> GetAllUsersMemberDTO(UserParams userParams);
 
         Task<User> GetUserById(int userId);
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DatingApp.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace DatingApp.Domain.DTOs
 
         [Display(Name = "Gender")]
         [Required(ErrorMessage = "Please enter {0}")]
-        public int Gender { get; set; }
+        public GenderEnum Gender { get; set; }
 
         [Display(Name = "KnownAs")]
         [Required(ErrorMessage = "Please enter {0}")]
