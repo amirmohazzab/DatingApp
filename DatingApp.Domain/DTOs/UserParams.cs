@@ -7,14 +7,8 @@ using System.Threading.Tasks;
 
 namespace DatingApp.Domain.DTOs
 {
-    public class UserParams
+    public class UserParams : BasePagination
     {
-        private const int MaxPageSize = 50;
-
-        private int _pageSize = 10;
-
-        public int PageNumber { get; set; } = 1;
-
         public string? currentUserName { get; set; }
 
         public GenderEnum Gender { get; set; } = GenderEnum.Male;
@@ -26,12 +20,6 @@ namespace DatingApp.Domain.DTOs
         public OrderByEnum OrderBy { get; set; } = OrderByEnum.lastActive;
 
         public TypeSort TypeSort { get; set; } = TypeSort.desc;
-
-        public int PageSize
-        {
-            get => _pageSize;
-            set => _pageSize = (value > MaxPageSize) ? MaxPageSize : value;
-        }
     }
 
     public enum OrderByEnum

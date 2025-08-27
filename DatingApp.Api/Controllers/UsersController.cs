@@ -12,11 +12,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace DatingApp.Api.Controllers
 {
-    
+    [Authorize]
     [ServiceFilter(typeof(LogUserActivity))]
     public class UsersController(
         IUserRepository userRepository,
@@ -26,7 +27,9 @@ namespace DatingApp.Api.Controllers
         [HttpGet("GetAllUsers")]
         public async Task<ActionResult<PagedList<MemberDTO>>> GetUsers([FromQuery] UserParams userParams)
         {
-            //userParams.currentUserName = HttpContext.User.GetUserName();
+            //var currentUserName = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Name)?.Value;
+            var currentUserName = User.GetUserName();
+            userParams.currentUserName = currentUserName;
             var users = await userRepository.GetAllUsersMemberDTO(userParams);
 
             return Ok(users);
@@ -73,7 +76,7 @@ namespace DatingApp.Api.Controllers
             var result = await photoService.AddPhotoAsync(file);
             if (result.Error != null) return BadRequest(new ApiResponse(400, "Operation Failed"));
 
-            var username = HttpContext.User.GetUserName();
+            var username = User.GetUserName();
             var user = await userRepository.GetUserByUserNameWithPhotos(username);
             var photo = new Photo
             {
@@ -94,13 +97,13 @@ namespace DatingApp.Api.Controllers
         [HttpPut("SetMainPhoto/{photoId}")]
         public async Task<ActionResult<PhotoDTO>> SetMainPhoto(int photoId)
         {
-            var username = HttpContext.User.GetUserName();
+            var username = User.GetUserName();
             var user = await userRepository.GetUserByUserNameWithPhotos(username);
 
             if (user == null)
                 return NotFound(new ApiResponse(404, "User Not Found"));
 
-            var photo = user.Photos.FirstOrDefault(p => p.PhotoId == photoId);
+            var photo = user?.Photos.FirstOrDefault(p => p.PhotoId == photoId);
 
             if (photo == null)
                 return NotFound(new ApiResponse(404, "Photo Not Found"));
@@ -121,7 +124,7 @@ namespace DatingApp.Api.Controllers
         [HttpDelete("DeletePhoto/{photoId}")]
         public async Task<IActionResult> DeletePhoto(int photoId)
         {
-            var username = HttpContext.User.GetUserName();
+            var username = User.GetUserName();
             var user = await userRepository.GetUserByUserNameWithPhotos(username);
 
             if (user == null)

@@ -18,6 +18,7 @@ namespace DatingApp.Application.Helper
             if (!resultContext.HttpContext.User.Identity.IsAuthenticated) return;
 
             var userName = resultContext.HttpContext.User.GetUserName();
+            if (string.IsNullOrEmpty(userName)) return;
             var rep = resultContext.HttpContext.RequestServices.GetService<IUserRepository>();
             var user = await rep.GetUserByUserName(userName);
             user.LastActive = DateTime.Now;

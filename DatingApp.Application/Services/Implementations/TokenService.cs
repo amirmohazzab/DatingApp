@@ -23,9 +23,9 @@ namespace DatingApp.Application.Services.Implementations
 
         public string CreateToken(User user)
         {
-            var claims = new List<Claim>
+            var claims = new List<Claim>()
             {
-                new(JwtRegisteredClaimNames.NameId, user.UserName),
+                new(JwtRegisteredClaimNames.Name, user.UserName ?? ""),
                 new(JwtRegisteredClaimNames.Sid, user.UserId.ToString()),
             };
 

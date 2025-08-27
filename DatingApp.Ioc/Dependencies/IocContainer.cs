@@ -27,6 +27,8 @@ namespace DatingApp.Ioc.Dependencies
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAccountRepository, AccountRepository>();
+            services.AddScoped<IUserLikeRepository, UserLikeRepository>();
+            services.AddScoped<IMessageRepository, MessageRepository>();
 
             #endregion
         }

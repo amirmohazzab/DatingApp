@@ -44,5 +44,13 @@ namespace DatingApp.Domain.Entities.User
 
         [InverseProperty("User")]
         public ICollection<Photo.Photo>? Photos { get; set; }
+
+        public ICollection<UserLike>? SourceUserLikes { get; set; }
+
+        public ICollection<UserLike>? TargetUserLikes { get; set; }
+
+        public ICollection<Message.Message>? MessageSent { get; set; }
+
+        public ICollection<Message.Message>? MessageReceived { get; set; }
     }
 }

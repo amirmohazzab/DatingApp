@@ -4,6 +4,7 @@ using DatingApp.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DatingApp.Data.Migrations
 {
     [DbContext(typeof(DatingAppDbContext))]
-    partial class DatingAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250818180549_AddUserLikeTbl")]
+    partial class AddUserLikeTbl
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,56 +24,6 @@ namespace DatingApp.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("DatingApp.Domain.Entities.Message.Message", b =>
-                {
-                    b.Property<int>("MessageId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MessageId"));
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("DateRead")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("MessageSent")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("ReceiverDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("ReceiverId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ReceiverUserName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("SenderDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("SenderId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SenderUserName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("MessageId");
-
-                    b.HasIndex("ReceiverId");
-
-                    b.HasIndex("SenderId");
-
-                    b.ToTable("Messages");
-                });
 
             modelBuilder.Entity("DatingApp.Domain.Entities.Photo.Photo", b =>
                 {
@@ -172,23 +125,6 @@ namespace DatingApp.Data.Migrations
                     b.ToTable("UserLikes");
                 });
 
-            modelBuilder.Entity("DatingApp.Domain.Entities.Message.Message", b =>
-                {
-                    b.HasOne("DatingApp.Domain.Entities.User.User", "Receiver")
-                        .WithMany("MessageReceived")
-                        .HasForeignKey("ReceiverId")
-                        .IsRequired();
-
-                    b.HasOne("DatingApp.Domain.Entities.User.User", "Sender")
-                        .WithMany("MessageSent")
-                        .HasForeignKey("SenderId")
-                        .IsRequired();
-
-                    b.Navigation("Receiver");
-
-                    b.Navigation("Sender");
-                });
-
             modelBuilder.Entity("DatingApp.Domain.Entities.Photo.Photo", b =>
                 {
                     b.HasOne("DatingApp.Domain.Entities.User.User", "User")
@@ -221,10 +157,6 @@ namespace DatingApp.Data.Migrations
 
             modelBuilder.Entity("DatingApp.Domain.Entities.User.User", b =>
                 {
-                    b.Navigation("MessageReceived");
-
-                    b.Navigation("MessageSent");
-
                     b.Navigation("Photos");
 
                     b.Navigation("SourceUserLikes");
