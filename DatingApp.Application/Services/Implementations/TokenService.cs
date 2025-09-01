@@ -1,5 +1,6 @@
 ﻿using DatingApp.Application.Services.Interfaces;
 using DatingApp.Domain.Entities.User;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -15,19 +16,24 @@ namespace DatingApp.Application.Services.Implementations
     public class TokenService : ITokenService
     {
         private readonly SymmetricSecurityKey _key;
+        private readonly UserManager<User> userManager;
 
-        public TokenService(IConfiguration config)
+        public TokenService(IConfiguration config, UserManager<User> userManager)
         {
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Token:Key"]));
+            this.userManager = userManager;
         }
 
-        public string CreateToken(User user)
+        public async Task<string> CreateToken(User user)
         {
             var claims = new List<Claim>()
             {
                 new(JwtRegisteredClaimNames.Name, user.UserName ?? ""),
                 new(JwtRegisteredClaimNames.Sid, user.UserId.ToString()),
             };
+            var roles = await userManager.GetRolesAsync(user);
+            if (roles.Any())
+                claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
             var tokenDescriptor = new SecurityTokenDescriptor

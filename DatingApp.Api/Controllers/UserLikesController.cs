@@ -16,6 +16,7 @@ namespace DatingApp.Api.Controllers
         (IUserLikeRepository userLikeRepository, IUserRepository userRepository) : BaseController
     {
         [HttpPost("add-like")]
+        [Authorize(Roles = "member")]
         public async Task<IActionResult> AddLike([FromQuery] string targetUserName)
         {
             var sourceUserId = User.GetUserId();
@@ -35,6 +36,7 @@ namespace DatingApp.Api.Controllers
         }
 
         [HttpGet("get-likes")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<PagedList<MemberDTO>>> GetUserLikes([FromQuery] GetLikeParams getLikeParams)
         {
             var userId = User.GetUserId();

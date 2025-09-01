@@ -26,13 +26,14 @@ namespace DatingApp.Data.SeedData
                     if (users == null) return;
                     foreach (var user in users)
                     {
-                        using var hmac = new HMACSHA512();
-                        user.UserName = user.UserName.ToLower();
-                        user.PasswordSalt = hmac.Key;
-                        user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("Pa$$w0rd"));
-                        //await userManager.CreateAsync(user, "P@$$w0rd");
+						  await userManager.CreateAsync(user, P@$$w0rd);
+                    //    using var hmac = new HMACSHA512();
+                    //    user.UserName = user.UserName.ToLower();
+                    //    user.PasswordSalt = hmac.Key;
+                    //    user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("Pa$$w0rd"));
+                    //    //await userManager.CreateAsync(user, "P@$$w0rd");
                     }
-                    await dbcontext.Users.AddRangeAsync(users);
+                    //await dbcontext.Users.AddRangeAsync(users);
                     await dbcontext.SaveChangesAsync();
                 }
             }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DatingApp.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,10 +9,18 @@ namespace DatingApp.Domain.DTOs
 {
     public class UserTokenDTO
     {
-        public string userName { get; set; }
+        public int UserId { get; set; }
 
-        public string token { get; set; }
+        public string? UserName { get; set; }
 
-        public string photoUrl { get; set; }
+        public string? Token { get; set; }
+
+        public string? PhotoUrl { get; set; }
+
+        public GenderEnum Gender { get; set; }
+
+        public string? KnownAs { get; set; }
+
+        public List<string>? Roles { get; set; }
     }
 }
