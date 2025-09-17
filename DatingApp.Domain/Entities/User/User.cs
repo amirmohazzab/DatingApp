@@ -12,8 +12,6 @@ namespace DatingApp.Domain.Entities.User
 {
     public class User : IdentityUser<int>
     {
-        public int UserId { get; set; }
-
         public GenderEnum Gender { get; set; }
 
         public override string? UserName { get; set; }

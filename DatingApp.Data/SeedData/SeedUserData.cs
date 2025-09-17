@@ -1,6 +1,6 @@
 ﻿using DatingApp.Data.Context;
 using DatingApp.Domain.Entities.User;
-using Microsoft.AspNet.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
@@ -15,7 +15,7 @@ namespace DatingApp.Data.SeedData
 {
     public class SeedUserData
     {
-        public static async Task SeedUsers(DatingAppDbContext dbcontext, ILoggerFactory loggerFactory)
+        public static async Task SeedUsers(DatingAppDbContext dbcontext, ILoggerFactory loggerFactory, UserManager<User> userManager)
         {
             try
             {
@@ -26,7 +26,7 @@ namespace DatingApp.Data.SeedData
                     if (users == null) return;
                     foreach (var user in users)
                     {
-						  await userManager.CreateAsync(user, P@$$w0rd);
+						  await userManager.CreateAsync(user, "P@$$w0rd");
                     //    using var hmac = new HMACSHA512();
                     //    user.UserName = user.UserName.ToLower();
                     //    user.PasswordSalt = hmac.Key;

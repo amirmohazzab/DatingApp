@@ -29,7 +29,7 @@ namespace DatingApp.Application.Services.Implementations
             var claims = new List<Claim>()
             {
                 new(JwtRegisteredClaimNames.Name, user.UserName ?? ""),
-                new(JwtRegisteredClaimNames.Sid, user.UserId.ToString()),
+                new(JwtRegisteredClaimNames.Sid, user.Id.ToString()),
             };
             var roles = await userManager.GetRolesAsync(user);
             if (roles.Any())

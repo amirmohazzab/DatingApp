@@ -1,10 +1,13 @@
 ﻿using DatingApp.Domain.DTOs;
 using DatingApp.Domain.Entities.Message;
+using DatingApp.Domain.Entities.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Group = DatingApp.Domain.Entities.User.Group;
 
 namespace DatingApp.Domain.Interfaces
 {
@@ -14,7 +17,7 @@ namespace DatingApp.Domain.Interfaces
 
         Task<Message> GetMessageById(int messageId);
 
-        void DeleteMessage(int messageId);
+        void DeleteMessage(Message message);
 
         Task<PagedList<MessageDto>> GetMessageForUser(MessageParams messageParams);
 
@@ -22,6 +25,18 @@ namespace DatingApp.Domain.Interfaces
 
         Task<bool> SaveAll();
 
-        Task UpdateMessageToRead(List<MessageDto> messages, string userName);
+        Task UpdateMessageToRead(List<Message> messages, string userName);
+
+        #region Signalr
+
+        void AddGroup(Group group);
+
+        void RemoveConnection(Connection connection);
+
+        Task<Connection> GetConnection(string connectionId);
+
+        Task<Group> GetMessageGroup(string groupName);
+
+        #endregion
     }
 }

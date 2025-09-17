@@ -13,7 +13,6 @@ namespace DatingApp.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            builder.HasKey(u => u.UserId);
             builder.Property(u => u.UserName).IsRequired();
         }
     }

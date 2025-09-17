@@ -25,7 +25,7 @@ namespace DatingApp.Data.Repositories
         public async Task<PagedList<MemberDTO>> GetAllUsersMemberDTO(UserParams userParams)
         {
             var query = dbContext.Users.AsNoTracking();
-            //query = query.Where(u => u.UserName != userParams.currentUserName);
+            query = query.Where(u => u.UserName != userParams.currentUserName);
             query = query.Where(u => u.Gender == userParams.Gender);
             query = query.Where(u => u.Age > userParams.MinAge && u.Age < userParams.MaxAge);
 
@@ -54,10 +54,10 @@ namespace DatingApp.Data.Repositories
             return items;
         }
 
-        public async Task<MemberDTO> GetMemberDTOById(int userId)
+        public async Task<MemberDTO> GetMemberDTOById(int id)
         {
             return await dbContext.Users.ProjectTo<MemberDTO>(mapper.ConfigurationProvider)
-                .SingleOrDefaultAsync(u => u.UserId == userId);
+                .SingleOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task<MemberDTO> GetMemberDTOByUserName(string userName)
@@ -66,9 +66,9 @@ namespace DatingApp.Data.Repositories
                 .SingleOrDefaultAsync(u => u.UserName.ToLower() == userName.ToLower());
         }
 
-        public async Task<User> GetUserById(int userId)
+        public async Task<User> GetUserById(int id)
         {
-            return await dbContext.Users.SingleOrDefaultAsync(u => u.UserId == userId);
+            return await dbContext.Users.SingleOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task<User> GetUserByUserName(string userName)

@@ -10,7 +10,7 @@ namespace DatingApp.Domain.DTOs
 {
     public class MemberDTO
     {
-        public int UserId { get; set; }
+        public int Id { get; set; }
 
         public GenderEnum Gender { get; set; }
 

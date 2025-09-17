@@ -14,9 +14,9 @@ namespace DatingApp.Domain.Interfaces
 
         Task<PagedList<MemberDTO>> GetAllUsersMemberDTO(UserParams userParams);
 
-        Task<User> GetUserById(int userId);
+        Task<User> GetUserById(int id);
 
-        Task<MemberDTO> GetMemberDTOById(int userId);
+        Task<MemberDTO> GetMemberDTOById(int id);
 
         Task<MemberDTO> GetMemberDTOByUserName(string userName);
 

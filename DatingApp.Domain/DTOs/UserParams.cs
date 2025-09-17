@@ -11,7 +11,7 @@ namespace DatingApp.Domain.DTOs
     {
         public string? currentUserName { get; set; }
 
-        public GenderEnum Gender { get; set; } = GenderEnum.Male;
+        public GenderEnum Gender { get; set; } = GenderEnum.male;
 
         public int MinAge { get; set; } = 18;
 

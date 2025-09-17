@@ -13,12 +13,14 @@ namespace DatingApp.Domain.Interfaces
     {
         Task<UserLike> GetUserLike(int sourceId, int targetId);
 
-        Task<User> GetUserWithLikes(int userId);
+        Task<User> GetUserWithLikes(int id);
 
-        Task<PagedList<MemberDTO>> GetUserLikes(GetLikeParams getLikeParams, int userId);
+        Task<PagedList<MemberDTO>> GetUserLikes(GetLikeParams getLikeParams, int id);
 
         Task AddLike(int sourceId, int targetId);
 
         Task<bool> SaveAsync();
+
+        void RemoveLike(UserLike like);
     }
 }

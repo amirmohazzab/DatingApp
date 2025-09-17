@@ -3,6 +3,7 @@ using DatingApp.Api.Extensions;
 using DatingApp.Api.Helper;
 using DatingApp.Api.Middlewares;
 using DatingApp.Application.Helper;
+using DatingApp.Application.SignalR;
 using DatingApp.Data.Context;
 using DatingApp.Data.SeedData;
 using DatingApp.Domain.Entities.User;
@@ -11,17 +12,24 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
 #region Add Services
 
 builder.Services.RegisterServices();
+
+builder.Services.AddSingleton<PresenceTracker>();
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
 
@@ -31,11 +39,25 @@ builder.Services.AddScoped<LogUserActivity>();
 
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
 
+builder.Services.AddSignalR(options => {
+    options.EnableDetailedErrors = true;
+    options.ClientTimeoutInterval = TimeSpan.FromSeconds(60);  
+    options.KeepAliveInterval = TimeSpan.FromSeconds(15);     
+});
+
 #endregion
 
 #region Cors
 
-builder.Services.AddCors();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy",
+        builder => builder
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials()
+            .WithOrigins("http://localhost:4200", "https://localhost:4200")); 
+});
 
 #endregion
 
@@ -98,11 +120,14 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("*"));
+app.UseCors("CorsPolicy");
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<PresenceHub>("/hubs/presence");
+app.MapHub<MessageHub>("/hubs/message");
 
 app.Run();

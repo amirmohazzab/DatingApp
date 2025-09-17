@@ -3,6 +3,7 @@ using AutoMapper.QueryableExtensions;
 using DatingApp.Data.Context;
 using DatingApp.Domain.DTOs;
 using DatingApp.Domain.Entities.Message;
+using DatingApp.Domain.Entities.User;
 using DatingApp.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -10,6 +11,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using Connection = DatingApp.Domain.Entities.User.Connection;
 
 namespace DatingApp.Data.Repositories
 {
@@ -22,9 +25,9 @@ namespace DatingApp.Data.Repositories
             await dbContext.Messages.AddAsync(message);
         }
 
-        public void DeleteMessage(int messageId)
+        public void DeleteMessage(Message message)
         {
-            throw new NotImplementedException();
+            dbContext.Messages.Remove(message);
         }
 
         public async Task<Message> GetMessageById(int messageId)
@@ -50,13 +53,13 @@ namespace DatingApp.Data.Repositories
 
         public async Task<IEnumerable<MessageDto>> GetMessageThread(string currentUserName, string recipientUserName)
         {
-            var messages = await dbContext.Messages
+            var messageEntities = await dbContext.Messages
                 .Where(p => p.ReceiverUserName == currentUserName && p.SenderUserName == recipientUserName ||
                  p.SenderUserName == currentUserName && p.ReceiverUserName == recipientUserName)
-                .ProjectTo<MessageDto>(mapper.ConfigurationProvider)
                 .OrderBy(p => p.MessageSent).ToListAsync();
 
-            await UpdateMessageToRead(messages, currentUserName);
+            await UpdateMessageToRead(messageEntities, currentUserName);
+            var messages = mapper.Map<IEnumerable<MessageDto>>(messageEntities);
             return messages;
         }
 
@@ -65,19 +68,53 @@ namespace DatingApp.Data.Repositories
             return await dbContext.SaveChangesAsync() > 0;
         }
 
-        public async Task UpdateMessageToRead(List<MessageDto> messages, string userName)
+        public async Task UpdateMessageToRead(List<Message> messages, string currentUserName)
         {
-            messages = messages.Where(p => p?.DateRead == null && p.ReceiverUserName == userName).ToList();
-            if (messages.Any())
+            if (messages == null) return;
+
+            var unreadMessages = messages.Where(p => p?.DateRead == null && p.ReceiverUserName == currentUserName).ToList();
+            if (!unreadMessages.Any()) return;
+
+            if (unreadMessages.Any())
             {
-                messages.ForEach(p =>
+                unreadMessages.ForEach(p =>
                 {
                     p.DateRead = DateTime.Now;
                     p.IsRead = true;
                 });
-                dbContext.UpdateRange(mapper.Map<List<Message>>(messages));
+                //dbContext.UpdateRange(mapper.Map<List<Message>>(messages));
                 await dbContext.SaveChangesAsync();
             }
         }
+
+        #region Signalr
+
+        public void AddGroup(Group group)
+        {
+            dbContext.Groups.Add(group);
+        }
+
+        public async Task<Connection> GetConnection(string connectionId)
+        {
+            return await dbContext.Connections.FirstOrDefaultAsync(c => c.ConnectionId == connectionId);
+        }
+
+        public async Task<Group> GetMessageGroup(string groupName)
+        {
+            if (dbContext == null)
+                throw new Exception("dbContext is null!");
+
+            if (dbContext.Groups == null)
+                throw new Exception("dbContext.Groups is null!");
+
+            return await dbContext.Groups.Include(g => g.Connections).FirstOrDefaultAsync(c => c.Name == groupName);
+        }
+
+        public void RemoveConnection(Connection connection)
+        {
+            dbContext.Connections.Remove(connection);
+        }
+
+        #endregion
     }
 }

@@ -29,7 +29,7 @@ namespace DatingApp.Data.Repositories
             return await dbContext.UserLikes.FindAsync(sourceId, targetId);
         }
 
-        public async Task<PagedList<MemberDTO>> GetUserLikes(GetLikeParams getLikeParams, int userId)
+        public async Task<PagedList<MemberDTO>> GetUserLikes(GetLikeParams getLikeParams, int id)
         {
             var users = dbContext.Users.AsQueryable();
             var likes = dbContext.UserLikes.AsQueryable();
@@ -38,7 +38,7 @@ namespace DatingApp.Data.Repositories
             {
                 likes = likes.Include(u => u.TargetUser)
                     .ThenInclude(u => u.Photos)
-                    .Where(u => u.SourceUserId == userId);
+                    .Where(u => u.SourceUserId == id);
 
                 users = likes.Select(u => u.TargetUser);
             }
@@ -46,7 +46,7 @@ namespace DatingApp.Data.Repositories
             {
                 likes = likes.Include(u => u.SourceUser)
                     .ThenInclude(u => u.Photos)
-                    .Where(u => u.TargetUserId == userId);
+                    .Where(u => u.TargetUserId == id);
 
                 users = likes.Select(u => u.SourceUser);
 
@@ -55,14 +55,19 @@ namespace DatingApp.Data.Repositories
             return await PagedList<MemberDTO>.CreateAsync(result, getLikeParams.PageNumber, getLikeParams.PageSize);
         }
 
-        public Task<User> GetUserWithLikes(int userId)
+        public Task<User> GetUserWithLikes(int id)
         {
-            return dbContext.Users.Include(u => u.TargetUserLikes).FirstOrDefaultAsync(u =>  u.UserId == userId);
+            return dbContext.Users.Include(u => u.TargetUserLikes).FirstOrDefaultAsync(u =>  u.Id == id);
         }
 
         public async Task<bool> SaveAsync()
         {
             return await dbContext.SaveChangesAsync() > 0;
+        }
+
+        public void RemoveLike(UserLike like)
+        {
+            dbContext.UserLikes.Remove(like);
         }
     }
 }

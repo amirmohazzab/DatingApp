@@ -21,7 +21,7 @@ namespace DatingApp.Api.Controllers
         public async Task<ActionResult<MessageDto>> CreateMessage(CreateMessageDto model)
         {
             var currentUser = User.GetUserName();
-            if (currentUser == model.RecipientUserName) return BadRequest("You Can not Send Message to yourfelf");
+            if (currentUser == model.RecipientUserName) return BadRequest(new ApiResponse(400, "You Can not Send Message to yourfelf"));
 
             var sender = await userRepository.GetUserByUserName(currentUser);
             if (sender == null) return BadRequest(new ApiResponse(400, "Sender Not Found"));
@@ -31,9 +31,9 @@ namespace DatingApp.Api.Controllers
 
             var message = new Message()
             {
-                SenderId = sender.UserId,
+                SenderId = sender.Id,
                 SenderUserName = sender.UserName,
-                ReceiverId = recipient.UserId,
+                ReceiverId = recipient.Id,
                 ReceiverUserName = recipient.UserName,
                 Content = model.Content
             };

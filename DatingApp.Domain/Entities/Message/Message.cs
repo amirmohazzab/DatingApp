@@ -30,6 +30,8 @@ namespace DatingApp.Domain.Entities.Message
 
         public bool IsRead { get; set; } = false;
 
+        public string SenderPhotoUrl { get; set; }
+
         public User.User Sender { get; set; }
 
         public User.User Receiver { get; set; }

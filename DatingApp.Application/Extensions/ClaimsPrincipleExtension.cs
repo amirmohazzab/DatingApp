@@ -22,10 +22,10 @@ namespace DatingApp.Application.Extensions
             //return int.Parse(userId);
             //return Convert.ToInt32(claimsPrincipal.FindFirst(ClaimTypes.Sid)?.Value);
 
-            string? userId = claimsPrincipal.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sid)?.Value;
+            string? id = claimsPrincipal.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sid)?.Value;
 
-            if (!string.IsNullOrWhiteSpace(userId))
-                return int.Parse(userId);
+            if (!string.IsNullOrWhiteSpace(id))
+                return int.Parse(id);
 
             else return default;
 

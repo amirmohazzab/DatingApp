@@ -8,7 +8,7 @@ namespace DatingApp.Domain.Enums
 {
     public enum GenderEnum
     {
-        Male,
-        Female
+        male,
+        female
     }
 }

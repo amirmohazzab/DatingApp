@@ -35,10 +35,10 @@ namespace DatingApp.Api.Controllers
             return Ok(users);
         }
 
-        [HttpGet("getUserById/{userId:int}")]
-        public async Task<ActionResult<MemberDTO>> GetUserById(int userId)
+        [HttpGet("getUserById/{id:int}")]
+        public async Task<ActionResult<MemberDTO>> GetUserById(int id)
         {
-            var user = await userRepository.GetMemberDTOById(userId);
+            var user = await userRepository.GetMemberDTOById(id);
 
             if (user == null) return NotFound(new ApiResponse(404, "User Not Found"));
             return Ok(user);
@@ -82,7 +82,7 @@ namespace DatingApp.Api.Controllers
             {
                 Url = result.SecureUrl.AbsoluteUri,
                 PublicId = result.PublicId,
-                UserId = user.UserId,
+                UserId = user.Id,
                 IsMain = user?.Photos?.Count == 0 ? true : false,
             };
             user?.Photos?.Add(photo);

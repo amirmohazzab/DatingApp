@@ -19,7 +19,7 @@ namespace DatingApp.Api.Controllers
             var users = await userManager.Users.Include(u => u.UserRoles).ThenInclude(u => u.Role)
                 .Select(u => new UserTokenDTO
                 {
-                    UserId = u.UserId,
+                    Id = u.Id,
                     UserName = u.UserName,
                     Roles = u.UserRoles.Select(r => r.Role.Name).ToList(),
                     Gender = u.Gender,
@@ -37,7 +37,7 @@ namespace DatingApp.Api.Controllers
             var user = await userManager.Users.FirstOrDefaultAsync(u => u.UserName == userName);
             if (user == null) return NotFound(new ApiResponse(400, userName + "Not Found"));
 
-            var userRole = dbContext.UserRoles.Where(ur => ur.UserId == user.UserId).ToList();
+            var userRole = dbContext.UserRoles.Where(ur => ur.UserId == user.Id).ToList();
             if (userRole.Any() && userRole.Count() > 0)
             {
                 dbContext.UserRoles.RemoveRange(userRole);
